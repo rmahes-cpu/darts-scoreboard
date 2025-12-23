@@ -127,10 +127,8 @@
     .hint{color: var(--muted); font-size:12px; line-height:1.45}
     .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
 
-    /* Setup scroll */
     .setupWrap{height:100%; overflow:auto; -webkit-overflow-scrolling: touch; padding-bottom: 12px;}
 
-    /* Swipe 3 pages */
     .swipeShell{height:100%; display:flex; flex-direction:column; gap:10px; overflow:hidden;}
     .swipeHint{display:flex; align-items:center; justify-content:space-between; gap:10px;}
     .chip{
@@ -181,7 +179,6 @@
       .swipePanel{ min-width:auto; height:auto; overflow: visible; }
     }
 
-    /* Game: compact player boxes */
     .playerRow{display:grid; grid-template-columns: 1fr 1fr; gap:10px; align-items:stretch;}
     .playerMini{
       border-radius: 16px;
@@ -254,13 +251,8 @@
     .checkoutCompact .mono{font-weight:950; color: var(--ink)}
     .checkoutCompact .lbl{font-size:9px; font-weight:950; letter-spacing:.35px; text-transform:uppercase; color: var(--muted); margin-bottom:3px}
 
-    /* Actions row under scoreboard */
-    .actionsRow{
-      display:flex;
-      justify-content:flex-end;
-      gap:10px;
-      padding: 0 4px;
-    }
+    /* Header actions row (Undo left of Reset) */
+    .btns button{white-space:nowrap}
 
     /* Entry bar */
     .entryShell{margin-top:auto; display:flex; flex-direction:column; gap:8px;}
@@ -279,7 +271,6 @@
     .entryBar input{padding: 12px 10px}
     .entryBtn{flex: 0 0 auto}
 
-    /* History vertical scroll */
     .scrollCard{flex: 1; overflow:auto; -webkit-overflow-scrolling: touch; padding-right: 2px;}
     .event{
       border-radius: 14px;
@@ -293,7 +284,6 @@
     .event .main{font-weight:950}
     .event .meta{font-size:12px; color: var(--muted)}
 
-    /* ===== Stats table (3-column layout) ===== */
     .statsTable{
       display:grid;
       grid-template-columns: 1.4fr 1fr 1fr;
@@ -308,23 +298,15 @@
       text-align:center;
       border:1px solid rgba(10,20,40,.08);
     }
-    .statsHeader.name{
-      text-align:left;
-    }
+    .statsHeader.name{ text-align:left; }
     .statCell{
       padding:7px 8px;
       border-radius:10px;
       background: rgba(242,245,255,.8);
       border:1px solid rgba(10,20,40,.08);
     }
-    .statName{
-      font-weight:900;
-      color: var(--muted);
-    }
-    .statVal{
-      text-align:center;
-      font-weight:1000;
-    }
+    .statName{ font-weight:900; color: var(--muted); }
+    .statVal{ text-align:center; font-weight:1000; }
     @media (max-width: 420px){
       .statsTable{font-size:11px}
     }
@@ -352,7 +334,10 @@
     <div class="logo" aria-hidden="true"></div>
     <h1>DARTS <span>Scoreboard</span></h1>
   </div>
+
+  <!-- Undo placed to the left of Reset -->
   <div class="btns">
+    <button class="ghost" id="btnUndoTop">Undo</button>
     <button class="ghost" id="btnNew">New</button>
     <button class="ghost" id="btnExport">Export</button>
     <button class="danger" id="btnResetAll">Reset</button>
@@ -409,7 +394,7 @@
           <div class="divider"></div>
 
           <div class="row between">
-            <div class="hint">Exact remaining auto-finishes the leg. Swipe left for history, right for stats.</div>
+            <div class="hint">Exact remaining auto-finishes the leg.</div>
             <button class="primary" id="btnStart">Start</button>
           </div>
         </div>
@@ -451,10 +436,6 @@
         <div class="swipePanel">
           <div id="playersPanel" class="playerRow"></div>
 
-          <div class="actionsRow">
-            <button id="btnUndo">Undo</button>
-          </div>
-
           <div class="entryShell">
             <div class="entryBar">
               <div class="field">
@@ -471,8 +452,6 @@
               </div>
               <button class="primary entryBtn" id="btnSubmit">Go</button>
             </div>
-
-            <!-- removed the old instruction line you mentioned -->
           </div>
 
           <div class="toast" id="toast"></div>
@@ -492,7 +471,7 @@
 
 <script>
 (() => {
-  const STORAGE_KEY = "darts_scoreboard_v8";
+  const STORAGE_KEY = "darts_scoreboard_v9";
   const $ = (id) => document.getElementById(id);
 
   const setupView = $("setupView");
@@ -514,7 +493,7 @@
 
   const btnStart     = $("btnStart");
   const btnSubmit    = $("btnSubmit");
-  const btnUndo      = $("btnUndo");
+  const btnUndoTop   = $("btnUndoTop");
   const btnNew       = $("btnNew");
   const btnExport    = $("btnExport");
   const btnResetAll  = $("btnResetAll");
@@ -582,7 +561,7 @@
   // ---------- State ----------
   function emptyMatch(){
     return {
-      version: 8,
+      version: 9,
       config: null,
       status: "setup",
 
@@ -970,7 +949,7 @@
     resetVisitInputs(true);
   }
 
-  // ---------- Stats calculation ----------
+  // ---------- Stats ----------
   function buildPlayerStats(playerIdx){
     const visits = match.history.filter(e => e.type === "visit" && e.player === playerIdx);
 
@@ -1040,14 +1019,13 @@
     return {
       totalScored, legsWonTotal, matchAvg, completedLegAvg,
       bestLegAvg, worstLegAvg, previousLegAvg, currentLegAvg,
-      checkoutPct, checkoutSuccess, checkoutAttempts,
+      checkoutPct,
       doubleAtt,
       breaks, avgDartsPerLeg, bestLegDarts,
       first9Avg, c60,c100,c140,c170,c180
     };
   }
 
-  // ---------- Render ----------
   function renderPlayers(){
     playersPanel.innerHTML = "";
     for (let i=0;i<2;i++){
@@ -1198,6 +1176,7 @@
     if (!match || match.status === "setup" || !match.config){
       setupView.style.display = "block";
       gameView.style.display = "none";
+      btnUndoTop.disabled = true;
       return;
     }
     setupView.style.display = "none";
@@ -1207,7 +1186,7 @@
     renderHistory();
     renderStats();
 
-    btnUndo.disabled = (match.status !== "playing") || !match.history.some(e => e.type === "visit");
+    btnUndoTop.disabled = (match.status !== "playing") || !match.history.some(e => e.type === "visit");
   }
 
   // ---------- Swipe dots ----------
@@ -1250,7 +1229,7 @@
     if (e.key === "Enter"){ submitVisit(); focusScoreInput(); }
   });
 
-  btnUndo.addEventListener("click", () => { undo(); focusScoreInput(); });
+  btnUndoTop.addEventListener("click", () => { undo(); focusScoreInput(); });
 
   btnNew.addEventListener("click", () => {
     match = emptyMatch();
