@@ -254,7 +254,7 @@
     .checkoutCompact .mono{font-weight:950; color: var(--ink)}
     .checkoutCompact .lbl{font-size:9px; font-weight:950; letter-spacing:.35px; text-transform:uppercase; color: var(--muted); margin-bottom:3px}
 
-    /* Strategic actions row under scoreboard */
+    /* Actions row under scoreboard */
     .actionsRow{
       display:flex;
       justify-content:flex-end;
@@ -279,7 +279,7 @@
     .entryBar input{padding: 12px 10px}
     .entryBtn{flex: 0 0 auto}
 
-    /* History / Stats vertical scroll */
+    /* History vertical scroll */
     .scrollCard{flex: 1; overflow:auto; -webkit-overflow-scrolling: touch; padding-right: 2px;}
     .event{
       border-radius: 14px;
@@ -293,58 +293,40 @@
     .event .main{font-weight:950}
     .event .meta{font-size:12px; color: var(--muted)}
 
-    .statsTwoUp{display:grid; grid-template-columns: 1fr 1fr; gap:10px;}
-    .statsCard{
-      border-radius: 16px;
-      border:1px solid rgba(10,20,40,.12);
-      background: rgba(255,255,255,.95);
-      box-shadow: 0 12px 30px rgba(10,20,40,.08);
-      padding: 10px;
-      overflow:hidden;
-      min-width:0;
-    }
-    .statsHead{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom: 8px;}
-    .statsName{
-      font-weight:1100;
-      font-size: 13px;
-      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-      min-width:0;
-    }
-    .statsBadge{
-      font-size:10px;
-      font-weight:1000;
-      color: #fff;
-      padding: 6px 8px;
-      border-radius: 999px;
-      background: linear-gradient(180deg, rgba(0,119,255,.95), rgba(11,60,255,.92));
-      border:1px solid rgba(0,119,255,.55);
-      white-space:nowrap;
-    }
-    .statRow{
-      display:flex; align-items:baseline; justify-content:space-between; gap:8px;
-      border:1px solid rgba(10,20,40,.08);
-      background: rgba(242,245,255,.75);
-      border-radius: 12px;
-      padding: 7px 8px;
-      margin-bottom: 6px;
-      min-width:0;
-    }
-    .statRow .k{
-      font-size:10px;
-      font-weight:950;
-      color: var(--muted);
-      letter-spacing:.35px;
-      text-transform:uppercase;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width: 62%;
-    }
-    .statRow .v{
+    /* ===== Stats table (3-column layout) ===== */
+    .statsTable{
+      display:grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap:6px;
       font-size:12px;
-      font-weight:1100;
-      text-align:right;
-      white-space:nowrap;
+    }
+    .statsHeader{
+      font-weight:1000;
+      background: rgba(0,119,255,.12);
+      border-radius:10px;
+      padding:8px;
+      text-align:center;
+      border:1px solid rgba(10,20,40,.08);
+    }
+    .statsHeader.name{
+      text-align:left;
+    }
+    .statCell{
+      padding:7px 8px;
+      border-radius:10px;
+      background: rgba(242,245,255,.8);
+      border:1px solid rgba(10,20,40,.08);
+    }
+    .statName{
+      font-weight:900;
+      color: var(--muted);
+    }
+    .statVal{
+      text-align:center;
+      font-weight:1000;
+    }
+    @media (max-width: 420px){
+      .statsTable{font-size:11px}
     }
 
     .toast{
@@ -427,7 +409,7 @@
           <div class="divider"></div>
 
           <div class="row between">
-            <div class="hint">Swipe left for history, right for stats. Exact remaining auto-finishes the leg.</div>
+            <div class="hint">Exact remaining auto-finishes the leg. Swipe left for history, right for stats.</div>
             <button class="primary" id="btnStart">Start</button>
           </div>
         </div>
@@ -467,10 +449,8 @@
 
         <!-- Panel 1: GAME -->
         <div class="swipePanel">
-          <!-- Scoreboard only -->
           <div id="playersPanel" class="playerRow"></div>
 
-          <!-- Only keep Undo; place it below the scoreboard -->
           <div class="actionsRow">
             <button id="btnUndo">Undo</button>
           </div>
@@ -492,9 +472,7 @@
               <button class="primary entryBtn" id="btnSubmit">Go</button>
             </div>
 
-            <div class="hint">
-              Exact remaining finishes the leg immediately. Swipe left for history, right for stats.
-            </div>
+            <!-- removed the old instruction line you mentioned -->
           </div>
 
           <div class="toast" id="toast"></div>
@@ -504,7 +482,7 @@
         <div class="swipePanel">
           <div class="card scrollCard">
             <h2>Statistics</h2>
-            <div id="statsTwoUp" class="statsTwoUp"></div>
+            <div id="statsTable" class="statsTable"></div>
           </div>
         </div>
       </div>
@@ -514,7 +492,7 @@
 
 <script>
 (() => {
-  const STORAGE_KEY = "darts_scoreboard_v7";
+  const STORAGE_KEY = "darts_scoreboard_v8";
   const $ = (id) => document.getElementById(id);
 
   const setupView = $("setupView");
@@ -522,7 +500,6 @@
 
   const playersPanel = $("playersPanel");
   const historyList  = $("historyList");
-  const statsTwoUpEl = $("statsTwoUp");
   const toastEl = $("toast");
 
   const startScoreEl = $("startScore");
@@ -605,7 +582,7 @@
   // ---------- State ----------
   function emptyMatch(){
     return {
-      version: 7,
+      version: 8,
       config: null,
       status: "setup",
 
@@ -778,7 +755,6 @@
     });
 
     match.history.push({ type:"leg_end", ts: nowISO(), setNo: match.setNo, legNo: match.legNo, winner: winnerIdx, forced });
-
     match.legsWonInSet[winnerIdx] += 1;
 
     if (match.legsWonInSet[winnerIdx] >= match.config.legsToWin){
@@ -877,7 +853,7 @@
     if (tryFocus) focusScoreInput();
   }
 
-  // Undo rebuild (same as before)
+  // ---------- Undo ----------
   function undo(){
     const lastVisitIndex = (() => {
       for (let i = match.history.length-1; i>=0; i--){
@@ -994,7 +970,7 @@
     resetVisitInputs(true);
   }
 
-  // ---------- Stats ----------
+  // ---------- Stats calculation ----------
   function buildPlayerStats(playerIdx){
     const visits = match.history.filter(e => e.type === "visit" && e.player === playerIdx);
 
@@ -1071,46 +1047,7 @@
     };
   }
 
-  function statRow(k, v){
-    return `<div class="statRow"><div class="k" title="${escapeHtml(k)}">${escapeHtml(k)}</div><div class="v">${v}</div></div>`;
-  }
-
-  function renderStats(){
-    const s0 = buildPlayerStats(0);
-    const s1 = buildPlayerStats(1);
-    const pct = (x) => (x==null ? "—" : `${fmt(x,1)}%`);
-
-    const renderOne = (idx, s) => {
-      const name = match.config.players[idx].name;
-      return `
-        <div class="statsCard">
-          <div class="statsHead">
-            <div class="statsName">${escapeHtml(name)}</div>
-            <div class="statsBadge">S${match.setsWon[idx]} · L${match.legsWonInSet[idx]}</div>
-          </div>
-          ${statRow("Score", `<span class="mono">${s.totalScored}</span>`)}
-          ${statRow("Legs won (total)", `<span class="mono">${s.legsWonTotal}</span>`)}
-          ${statRow("Match avg", `<span class="mono">${fmt(s.matchAvg)}</span>`)}
-          ${statRow("Leg avg (completed)", `<span class="mono">${fmt(s.completedLegAvg)}</span>`)}
-          ${statRow("Best leg avg", `<span class="mono">${fmt(s.bestLegAvg)}</span>`)}
-          ${statRow("Worst leg avg", `<span class="mono">${fmt(s.worstLegAvg)}</span>`)}
-          ${statRow("Previous leg avg", `<span class="mono">${fmt(s.previousLegAvg)}</span>`)}
-          ${statRow("Current leg avg", `<span class="mono">${fmt(s.currentLegAvg)}</span>`)}
-          ${statRow("Checkout %", `<span class="mono">${pct(s.checkoutPct)}</span> <span class="mono" style="opacity:.7">(${s.checkoutSuccess}/${s.checkoutAttempts})</span>`)}
-          ${statRow("Double attempts", `<span class="mono">${s.doubleAtt}</span>`)}
-          ${statRow("Breaks", `<span class="mono">${s.breaks}</span>`)}
-          ${statRow("Avg darts / leg", `<span class="mono">${fmt(s.avgDartsPerLeg,2)}</span>`)}
-          ${statRow("Best leg darts (won)", `<span class="mono">${s.bestLegDarts ?? "—"}</span>`)}
-          ${statRow("First 9 avg", `<span class="mono">${fmt(s.first9Avg)}</span>`)}
-          ${statRow("60+ / 100+ / 140+", `<span class="mono">${s.c60} / ${s.c100} / ${s.c140}</span>`)}
-          ${statRow("170+ / 180s", `<span class="mono">${s.c170} / ${s.c180}</span>`)}
-        </div>
-      `;
-    };
-
-    statsTwoUpEl.innerHTML = renderOne(0, s0) + renderOne(1, s1);
-  }
-
+  // ---------- Render ----------
   function renderPlayers(){
     playersPanel.innerHTML = "";
     for (let i=0;i<2;i++){
@@ -1211,6 +1148,52 @@
     }
   }
 
+  function renderStats(){
+    const s0 = buildPlayerStats(0);
+    const s1 = buildPlayerStats(1);
+
+    const p0 = match.config.players[0].name;
+    const p1 = match.config.players[1].name;
+
+    const fmtPct = (v) => v == null ? "—" : `${v.toFixed(1)}%`;
+    const fmtNum = (v) => v == null ? "—" : v.toFixed(2);
+
+    const rows = [
+      ["Score", s0.totalScored, s1.totalScored],
+      ["Legs won (total)", s0.legsWonTotal, s1.legsWonTotal],
+      ["Match average", fmtNum(s0.matchAvg), fmtNum(s1.matchAvg)],
+      ["Leg average", fmtNum(s0.completedLegAvg), fmtNum(s1.completedLegAvg)],
+      ["Best leg avg", fmtNum(s0.bestLegAvg), fmtNum(s1.bestLegAvg)],
+      ["Worst leg avg", fmtNum(s0.worstLegAvg), fmtNum(s1.worstLegAvg)],
+      ["Previous leg avg", fmtNum(s0.previousLegAvg), fmtNum(s1.previousLegAvg)],
+      ["Current leg avg", fmtNum(s0.currentLegAvg), fmtNum(s1.currentLegAvg)],
+      ["Checkout %", fmtPct(s0.checkoutPct), fmtPct(s1.checkoutPct)],
+      ["Double attempts", s0.doubleAtt, s1.doubleAtt],
+      ["Breaks", s0.breaks, s1.breaks],
+      ["Avg darts / leg", fmtNum(s0.avgDartsPerLeg), fmtNum(s1.avgDartsPerLeg)],
+      ["Best leg darts", s0.bestLegDarts ?? "—", s1.bestLegDarts ?? "—"],
+      ["First 9 avg", fmtNum(s0.first9Avg), fmtNum(s1.first9Avg)],
+      ["60+ / 100+ / 140+", `${s0.c60}/${s0.c100}/${s0.c140}`, `${s1.c60}/${s1.c100}/${s1.c140}`],
+      ["170+ / 180s", `${s0.c170}/${s0.c180}`, `${s1.c170}/${s1.c180}`]
+    ];
+
+    let html = `
+      <div class="statsHeader name">Statistic</div>
+      <div class="statsHeader">${escapeHtml(p0)}</div>
+      <div class="statsHeader">${escapeHtml(p1)}</div>
+    `;
+
+    for (const [name, v0, v1] of rows){
+      html += `
+        <div class="statCell statName">${escapeHtml(name)}</div>
+        <div class="statCell statVal">${escapeHtml(v0)}</div>
+        <div class="statCell statVal">${escapeHtml(v1)}</div>
+      `;
+    }
+
+    $("statsTable").innerHTML = html;
+  }
+
   function render(){
     if (!match || match.status === "setup" || !match.config){
       setupView.style.display = "block";
@@ -1248,7 +1231,7 @@
     updateDots();
   });
 
-  // ---------- Actions ----------
+  // ---------- UI actions ----------
   btnStart.addEventListener("click", () => {
     const startScore = clampInt(startScoreEl.value, 101, 5000) ?? 501;
     const setsToWin = clampInt(setsToWinEl.value, 1, 99);
@@ -1311,323 +1294,6 @@
     snapToPanel(1, false);
     setTimeout(() => focusScoreInput(), 60);
   }
-
-  // ---------- Functions referenced earlier ----------
-  function startNewMatch(config){
-    match = emptyMatch();
-    match.config = config;
-    match.status = "playing";
-
-    match.currentPlayer = 0;
-    match.setNo = 1;
-    match.legNo = 1;
-    match.setsWon = [0,0];
-    match.legsWonInSet = [0,0];
-
-    match.legStarter = 0;
-    match.remaining = [config.startScore, config.startScore];
-    match.legDarts = [0,0];
-    match.legScored = [0,0];
-    match.legVisits = [[],[]];
-
-    match.history.push({ type:"match_start", ts: nowISO(), config });
-    match.history.push({ type:"leg_start", ts: nowISO(), setNo: 1, legNo: 1, starter: 0 });
-
-    save();
-    render();
-    snapToPanel(1, false);
-    resetVisitInputs(true);
-    toast("Match started!", "good");
-  }
-
-  function beginNextLeg(){
-    match.legNo += 1;
-    match.legStarter = (match.legStarter + 1) % 2;
-    match.currentPlayer = match.legStarter;
-
-    match.remaining = [match.config.startScore, match.config.startScore];
-    match.legDarts = [0,0];
-    match.legScored = [0,0];
-    match.legVisits = [[],[]];
-
-    match.history.push({ type:"leg_start", ts: nowISO(), setNo: match.setNo, legNo: match.legNo, starter: match.legStarter });
-    save();
-  }
-
-  function beginNextSet(){
-    match.setNo += 1;
-    match.legNo = 1;
-    match.legsWonInSet = [0,0];
-
-    match.legStarter = (match.legStarter + 1) % 2;
-    match.currentPlayer = match.legStarter;
-
-    match.remaining = [match.config.startScore, match.config.startScore];
-    match.legDarts = [0,0];
-    match.legScored = [0,0];
-    match.legVisits = [[],[]];
-
-    match.history.push({ type:"set_start", ts: nowISO(), setNo: match.setNo });
-    match.history.push({ type:"leg_start", ts: nowISO(), setNo: match.setNo, legNo: 1, starter: match.legStarter });
-    save();
-  }
-
-  function finishMatch(winnerIdx){
-    match.status = "finished";
-    match.history.push({ type:"match_end", ts: nowISO(), winner: winnerIdx });
-    save();
-  }
-
-  function endLeg(winnerIdx, forced=false){
-    const winnerName = match.config.players[winnerIdx].name;
-    const winnerDarts = match.legDarts[winnerIdx];
-
-    const first9 = [calcFirst9(0), calcFirst9(1)];
-    const doubles = calcDoublesInLeg();
-    const checkoutAttempts = [doubles.att[0] > 0 ? 1 : 0, doubles.att[1] > 0 ? 1 : 0];
-
-    match.legs.push({
-      ts: nowISO(),
-      setNo: match.setNo,
-      legNo: match.legNo,
-      starter: match.legStarter,
-      winner: winnerIdx,
-      forced,
-      darts: [match.legDarts[0], match.legDarts[1]],
-      scored: [match.legScored[0], match.legScored[1]],
-      first9,
-      doubles,
-      checkoutAttempts
-    });
-
-    match.history.push({ type:"leg_end", ts: nowISO(), setNo: match.setNo, legNo: match.legNo, winner: winnerIdx, forced });
-    match.legsWonInSet[winnerIdx] += 1;
-
-    if (match.legsWonInSet[winnerIdx] >= match.config.legsToWin){
-      match.setsWon[winnerIdx] += 1;
-      match.history.push({ type:"set_end", ts: nowISO(), setNo: match.setNo, winner: winnerIdx });
-
-      if (match.setsWon[winnerIdx] >= match.config.setsToWin){
-        finishMatch(winnerIdx);
-        render();
-        toast(`${winnerName} wins the match!`, "good");
-        return;
-      }
-
-      beginNextSet();
-      render();
-      const nextStarterName = match.config.players[match.legStarter].name;
-      toast(`${winnerName} wins the leg in ${winnerDarts} darts. ${nextStarterName} throws first. Game on!`, "good");
-      return;
-    }
-
-    beginNextLeg();
-    render();
-    const nextStarterName = match.config.players[match.legStarter].name;
-    toast(`${winnerName} wins the leg in ${winnerDarts} darts. ${nextStarterName} throws first. Game on!`, "good");
-  }
-
-  function submitVisit(){
-    if (match.status !== "playing") return;
-
-    const p = activeIdx();
-    const score = clampInt(visitScoreEl.value, 0, 180);
-    const dartsUsed = clampInt(visitDartsEl.value, 1, 3);
-    const dblAtt = clampInt(dblAttEl.value, 0, 3);
-
-    if (score === null){ toast("Enter a valid score (0–180).", "bad"); return; }
-    if (dartsUsed === null){ toast("Darts must be 1–3.", "bad"); return; }
-    if (dblAtt === null){ toast("Double attempts must be 0–3.", "bad"); return; }
-
-    const prev = match.remaining[p];
-    const next = prev - score;
-
-    let bust = false;
-    let checkout = false;
-
-    if (next < 0 || next === 1) bust = true;
-    if (next === 0) checkout = true;
-
-    match.history.push({
-      type:"visit",
-      ts: nowISO(),
-      player: p,
-      setNo: match.setNo,
-      legNo: match.legNo,
-      prevRemaining: prev,
-      score,
-      dartsUsed,
-      doubleAttempts: dblAtt,
-      bust,
-      checkout
-    });
-
-    match.legDarts[p] += dartsUsed;
-
-    if (bust){
-      match.legVisits[p].push(0);
-      save(); render();
-      toast(`${match.config.players[p].name} bust!`, "bad");
-      match.currentPlayer = otherIdx();
-      save(); render();
-      resetVisitInputs(true);
-      return;
-    }
-
-    match.remaining[p] = next;
-    match.legScored[p] += score;
-    match.legVisits[p].push(score);
-
-    save(); render();
-
-    if (checkout){
-      endLeg(p, false);
-      resetVisitInputs(true);
-      return;
-    }
-
-    match.currentPlayer = otherIdx();
-    save(); render();
-    resetVisitInputs(true);
-  }
-
-  function resetVisitInputs(tryFocus=false){
-    visitScoreEl.value = "";
-    visitDartsEl.value = "3";
-    dblAttEl.value = "0";
-    if (tryFocus) focusScoreInput();
-  }
-
-  function undo(){
-    const lastVisitIndex = (() => {
-      for (let i = match.history.length-1; i>=0; i--){
-        if (match.history[i].type === "visit") return i;
-      }
-      return -1;
-    })();
-    if (lastVisitIndex === -1){ toast("Nothing to undo.", "warn"); return; }
-
-    const fullHistory = match.history.slice();
-    const rebuilt = emptyMatch();
-    rebuilt.config = match.config;
-    rebuilt.status = "playing";
-
-    rebuilt.currentPlayer = 0;
-    rebuilt.setNo = 1;
-    rebuilt.legNo = 1;
-    rebuilt.setsWon = [0,0];
-    rebuilt.legsWonInSet = [0,0];
-
-    rebuilt.legStarter = 0;
-    rebuilt.remaining = [rebuilt.config.startScore, rebuilt.config.startScore];
-    rebuilt.legDarts = [0,0];
-    rebuilt.legScored = [0,0];
-    rebuilt.legVisits = [[],[]];
-
-    const resetLeg = (starter) => {
-      rebuilt.legStarter = starter;
-      rebuilt.currentPlayer = starter;
-      rebuilt.remaining = [rebuilt.config.startScore, rebuilt.config.startScore];
-      rebuilt.legDarts = [0,0];
-      rebuilt.legScored = [0,0];
-      rebuilt.legVisits = [[],[]];
-    };
-
-    for (let i=0;i<fullHistory.length;i++){
-      if (i === lastVisitIndex) break;
-      const ev = fullHistory[i];
-
-      if (ev.type === "match_start"){
-        rebuilt.history.push(ev);
-      } else if (ev.type === "set_start"){
-        rebuilt.setNo = ev.setNo;
-        rebuilt.legNo = 1;
-        rebuilt.legsWonInSet = [0,0];
-        rebuilt.history.push(ev);
-      } else if (ev.type === "leg_start"){
-        rebuilt.setNo = ev.setNo;
-        rebuilt.legNo = ev.legNo;
-        resetLeg(ev.starter);
-        rebuilt.history.push(ev);
-      } else if (ev.type === "visit"){
-        rebuilt.history.push(ev);
-        const p = ev.player;
-        rebuilt.legDarts[p] += ev.dartsUsed;
-
-        if (!ev.bust){
-          rebuilt.remaining[p] = ev.prevRemaining - ev.score;
-          rebuilt.legScored[p] += ev.score;
-          rebuilt.legVisits[p].push(ev.score);
-        } else {
-          rebuilt.legVisits[p].push(0);
-        }
-
-        if (!ev.checkout){
-          rebuilt.currentPlayer = 1 - p;
-        }
-      } else if (ev.type === "leg_end"){
-        const doubles = (() => {
-          const att=[0,0];
-          for (let j=rebuilt.history.length-1; j>=0; j--){
-            const e2 = rebuilt.history[j];
-            if (e2.type === "leg_start") break;
-            if (e2.type === "visit") att[e2.player] += e2.doubleAttempts;
-          }
-          return {att};
-        })();
-
-        const first9 = [
-          (rebuilt.legVisits[0].slice(0,3).length===3) ? (rebuilt.legVisits[0].slice(0,3).reduce((a,b)=>a+b,0)/9)*3 : null,
-          (rebuilt.legVisits[1].slice(0,3).length===3) ? (rebuilt.legVisits[1].slice(0,3).reduce((a,b)=>a+b,0)/9)*3 : null
-        ];
-        const checkoutAttempts = [doubles.att[0]>0?1:0, doubles.att[1]>0?1:0];
-
-        rebuilt.legs.push({
-          ts: ev.ts,
-          setNo: ev.setNo,
-          legNo: ev.legNo,
-          starter: rebuilt.legStarter,
-          winner: ev.winner,
-          forced: ev.forced,
-          darts: [rebuilt.legDarts[0], rebuilt.legDarts[1]],
-          scored: [rebuilt.legScored[0], rebuilt.legScored[1]],
-          first9,
-          doubles,
-          checkoutAttempts
-        });
-
-        rebuilt.legsWonInSet[ev.winner] += 1;
-        rebuilt.history.push(ev);
-      } else if (ev.type === "set_end"){
-        rebuilt.setsWon[ev.winner] += 1;
-        rebuilt.history.push(ev);
-      } else if (ev.type === "match_end"){
-        rebuilt.status = "finished";
-        rebuilt.history.push(ev);
-      }
-    }
-
-    match = rebuilt;
-    save();
-    render();
-    toast("Undid last visit.", "good");
-    resetVisitInputs(true);
-  }
-
-  function renderAndCenter(){
-    render();
-    if (match.status !== "setup" && match.config){
-      snapToPanel(1, false);
-      setTimeout(() => focusScoreInput(), 60);
-    }
-  }
-
-  // ---------- Boot ----------
-  if (!match || !match.config || match.status === "setup"){
-    match = match ?? emptyMatch();
-    match.status = "setup";
-  }
-  renderAndCenter();
 })();
 </script>
 </body>
