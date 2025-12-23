@@ -179,6 +179,7 @@
       .swipePanel{ min-width:auto; height:auto; overflow: visible; }
     }
 
+    /* Scorecards */
     .playerRow{display:grid; grid-template-columns: 1fr 1fr; gap:10px; align-items:stretch;}
     .playerMini{
       border-radius: 16px;
@@ -251,12 +252,24 @@
     .checkoutCompact .mono{font-weight:950; color: var(--ink)}
     .checkoutCompact .lbl{font-size:9px; font-weight:950; letter-spacing:.35px; text-transform:uppercase; color: var(--muted); margin-bottom:3px}
 
-    /* Header actions row (Undo left of Reset) */
-    .btns button{white-space:nowrap}
+    /* Undo under scoreboard (as before) */
+    .actionsRow{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      padding: 0 4px;
+      margin-top: 0; /* no extra whitespace */
+    }
 
-    /* Entry bar */
-    .entryShell{margin-top:auto; display:flex; flex-direction:column; gap:8px;}
+    /* Entry box immediately under scorecards */
+    .entryShell{
+      margin-top: 0;      /* remove whitespace */
+      display:flex;
+      flex-direction:column;
+      gap:0;              /* remove whitespace */
+    }
     .entryBar{
+      margin-top: 0;      /* remove whitespace */
       border-radius: 16px;
       border:1px solid rgba(10,20,40,.12);
       background: rgba(255,255,255,.92);
@@ -334,10 +347,7 @@
     <div class="logo" aria-hidden="true"></div>
     <h1>DARTS <span>Scoreboard</span></h1>
   </div>
-
-  <!-- Undo placed to the left of Reset -->
   <div class="btns">
-    <button class="ghost" id="btnUndoTop">Undo</button>
     <button class="ghost" id="btnNew">New</button>
     <button class="ghost" id="btnExport">Export</button>
     <button class="danger" id="btnResetAll">Reset</button>
@@ -436,6 +446,7 @@
         <div class="swipePanel">
           <div id="playersPanel" class="playerRow"></div>
 
+          <!-- Entry box immediately below the scorecards -->
           <div class="entryShell">
             <div class="entryBar">
               <div class="field">
@@ -452,6 +463,11 @@
               </div>
               <button class="primary entryBtn" id="btnSubmit">Go</button>
             </div>
+          </div>
+
+          <!-- Undo stays under the input area (same spot as earlier "below the scoreboard") -->
+          <div class="actionsRow">
+            <button id="btnUndo">Undo</button>
           </div>
 
           <div class="toast" id="toast"></div>
@@ -471,7 +487,7 @@
 
 <script>
 (() => {
-  const STORAGE_KEY = "darts_scoreboard_v9";
+  const STORAGE_KEY = "darts_scoreboard_v10";
   const $ = (id) => document.getElementById(id);
 
   const setupView = $("setupView");
@@ -493,7 +509,7 @@
 
   const btnStart     = $("btnStart");
   const btnSubmit    = $("btnSubmit");
-  const btnUndoTop   = $("btnUndoTop");
+  const btnUndo      = $("btnUndo");
   const btnNew       = $("btnNew");
   const btnExport    = $("btnExport");
   const btnResetAll  = $("btnResetAll");
@@ -561,7 +577,7 @@
   // ---------- State ----------
   function emptyMatch(){
     return {
-      version: 9,
+      version: 10,
       config: null,
       status: "setup",
 
@@ -1176,7 +1192,6 @@
     if (!match || match.status === "setup" || !match.config){
       setupView.style.display = "block";
       gameView.style.display = "none";
-      btnUndoTop.disabled = true;
       return;
     }
     setupView.style.display = "none";
@@ -1186,7 +1201,7 @@
     renderHistory();
     renderStats();
 
-    btnUndoTop.disabled = (match.status !== "playing") || !match.history.some(e => e.type === "visit");
+    btnUndo.disabled = (match.status !== "playing") || !match.history.some(e => e.type === "visit");
   }
 
   // ---------- Swipe dots ----------
@@ -1229,7 +1244,7 @@
     if (e.key === "Enter"){ submitVisit(); focusScoreInput(); }
   });
 
-  btnUndoTop.addEventListener("click", () => { undo(); focusScoreInput(); });
+  btnUndo.addEventListener("click", () => { undo(); focusScoreInput(); });
 
   btnNew.addEventListener("click", () => {
     match = emptyMatch();
