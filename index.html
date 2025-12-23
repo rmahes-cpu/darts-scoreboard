@@ -12,19 +12,15 @@
       --muted:#44506f;
       --line:rgba(10,20,40,.12);
 
-      --skyBlue1:#0b3cff;
-      --skyBlue2:#0077ff;
-      --skyBlue3:#00b5ff;
-
-      --panel:#ffffff;
-      --panel2:#f2f5ff;
-
       --good:#10b981;
       --bad:#ef4444;
       --warn:#f59e0b;
 
       --ringRed:#e11d48;
       --ringGreen:#16a34a;
+
+      --skyBlue1:#0b3cff;
+      --skyBlue3:#00b5ff;
     }
 
     *{box-sizing:border-box}
@@ -88,7 +84,7 @@
       padding: 10px;
       max-width: 1200px;
       margin: 0 auto;
-      overflow: hidden; /* panels handle their own scrolling */
+      overflow: hidden;
     }
 
     .grid{display:grid; gap:12px}
@@ -149,25 +145,12 @@
     .no{color: var(--bad)}
     .warn{color: var(--warn)}
 
-    /* ---------- Setup scrolls normally ---------- */
-    .setupWrap{
-      height:100%;
-      overflow:auto;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom: 12px;
-    }
+    /* Setup scroll */
+    .setupWrap{height:100%; overflow:auto; -webkit-overflow-scrolling: touch; padding-bottom: 12px;}
 
-    /* ---------- Swipe shell (3 pages: History | Game | Stats) ---------- */
-    .swipeShell{
-      height:100%;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      overflow:hidden;
-    }
-    .swipeHint{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-    }
+    /* Swipe 3 pages */
+    .swipeShell{height:100%; display:flex; flex-direction:column; gap:10px; overflow:hidden;}
+    .swipeHint{display:flex; align-items:center; justify-content:space-between; gap:10px;}
     .chip{
       display:inline-flex; align-items:center; gap:8px;
       padding: 7px 10px;
@@ -181,11 +164,7 @@
       white-space:nowrap;
     }
     .dots{display:flex; gap:7px; align-items:center}
-    .dot{
-      width:8px; height:8px; border-radius:999px;
-      border:1px solid rgba(10,20,40,.18);
-      background: rgba(10,20,40,.08);
-    }
+    .dot{width:8px; height:8px; border-radius:999px; border:1px solid rgba(10,20,40,.18); background: rgba(10,20,40,.08);}
     .dot.active{ background: rgba(0,119,255,.35); border-color: rgba(0,119,255,.55); }
 
     .swipeWrap{
@@ -197,7 +176,6 @@
       scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
       border-radius: 20px;
-      scroll-padding: 0;
     }
     .swipePanel{
       min-width: 100%;
@@ -209,7 +187,6 @@
       overflow: hidden;
     }
 
-    /* On desktop: show columns and allow vertical page scroll */
     @media (min-width: 980px){
       main{ height:auto; min-height: calc(100vh - 56px); overflow: visible; }
       .swipeShell{ height:auto; overflow: visible; }
@@ -222,14 +199,8 @@
       .swipePanel{ min-width:auto; height:auto; overflow: visible; }
     }
 
-    /* ---------- GAME panel: compact two-up player boxes ---------- */
-    .playerRow{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-      align-items:stretch;
-    }
-
+    /* Game: two-up compact player boxes */
+    .playerRow{display:grid; grid-template-columns: 1fr 1fr; gap:10px; align-items:stretch;}
     .playerMini{
       border-radius: 16px;
       border:1px solid rgba(10,20,40,.12);
@@ -272,13 +243,7 @@
         linear-gradient(180deg, rgba(255,255,255,.98), rgba(242,245,255,.92));
     }
     .miniRemainLbl{font-size:10px; font-weight:950; letter-spacing:.35px; color: var(--muted); text-transform:uppercase}
-    .miniRemainVal{
-      font-size: 34px;
-      font-weight: 1100;
-      line-height: 1;
-      letter-spacing:.3px;
-      margin-top: 2px;
-    }
+    .miniRemainVal{font-size: 34px; font-weight: 1100; line-height: 1; letter-spacing:.3px; margin-top: 2px;}
     .miniKpis{
       margin-top: 8px;
       display:grid;
@@ -307,20 +272,8 @@
     .checkoutCompact .mono{font-weight:950; color: var(--ink)}
     .checkoutCompact .lbl{font-size:9px; font-weight:950; letter-spacing:.35px; text-transform:uppercase; color: var(--muted); margin-bottom:3px}
 
-    /* Smaller on tiny phones */
-    @media (max-width: 380px){
-      .miniRemainVal{font-size: 30px}
-      .miniKpi .v{font-size: 11px}
-      .miniName{font-size: 12px}
-    }
-
-    /* ---------- Entry bar: sticky bottom INSIDE Game panel; focusable big input ---------- */
-    .entryShell{
-      margin-top: auto; /* push to bottom */
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
+    /* Entry bar */
+    .entryShell{margin-top:auto; display:flex; flex-direction:column; gap:8px;}
     .entryBar{
       border-radius: 16px;
       border:1px solid rgba(10,20,40,.12);
@@ -336,23 +289,8 @@
     .entryBar input{padding: 12px 10px}
     .entryBtn{flex: 0 0 auto}
 
-    .scoreTap{
-      border-radius: 14px;
-      border:1px dashed rgba(0,119,255,.35);
-      background: rgba(0,119,255,.06);
-      padding: 9px 10px;
-      font-size: 12px;
-      font-weight: 850;
-      color: var(--muted);
-    }
-
-    /* ---------- History panel (vertical scroll allowed) ---------- */
-    .scrollCard{
-      flex: 1;
-      overflow:auto;
-      -webkit-overflow-scrolling: touch;
-      padding-right: 2px;
-    }
+    /* History / Stats vertical scroll */
+    .scrollCard{flex: 1; overflow:auto; -webkit-overflow-scrolling: touch; padding-right: 2px;}
     .event{
       border-radius: 14px;
       border:1px solid rgba(10,20,40,.10);
@@ -365,17 +303,7 @@
     .event .main{font-weight:950}
     .event .meta{font-size:12px; color: var(--muted)}
 
-    /* ---------- Stats panel: two-up, vertical scroll allowed ---------- */
-    .statsWrap{
-      flex: 1;
-      overflow:auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    .statsTwoUp{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-    }
+    .statsTwoUp{display:grid; grid-template-columns: 1fr 1fr; gap:10px;}
     .statsCard{
       border-radius: 16px;
       border:1px solid rgba(10,20,40,.12);
@@ -385,10 +313,7 @@
       overflow:hidden;
       min-width:0;
     }
-    .statsHead{
-      display:flex; align-items:center; justify-content:space-between; gap:8px;
-      margin-bottom: 8px;
-    }
+    .statsHead{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom: 8px;}
     .statsName{
       font-weight:1100;
       font-size: 13px;
@@ -430,10 +355,6 @@
       font-weight:1100;
       text-align:right;
       white-space:nowrap;
-    }
-    @media (max-width: 380px){
-      .statRow .k{font-size: 9px}
-      .statRow .v{font-size: 11px}
     }
 
     .toast{
@@ -516,16 +437,14 @@
           <div class="divider"></div>
 
           <div class="row between">
-            <div class="hint">Rules: <b>double-out</b> · bust on &lt;0 or 1 · finish on a double (incl. <b>BULL</b>).</div>
+            <div class="hint">Finish: if you enter the exact remaining, leg ends immediately (BULL supported in suggestions).</div>
             <button class="primary" id="btnStart">Start</button>
           </div>
         </div>
 
         <div class="card">
           <h2>Phone navigation</h2>
-          <div class="hint">
-            While playing: swipe <b>left</b> for <b>History</b>, stay in the middle for <b>Game</b>, swipe <b>right</b> for <b>Stats</b>.
-          </div>
+          <div class="hint">Swipe <b>left</b> for <b>History</b>, middle for <b>Game</b>, swipe <b>right</b> for <b>Stats</b>.</div>
         </div>
       </div>
     </div>
@@ -601,15 +520,11 @@
                 <label>Dub att</label>
                 <input id="dblAtt" type="number" inputmode="numeric" min="0" max="3" step="1" value="0" />
               </div>
-              <div class="field" style="max-width:72px;">
-                <label>Hit</label>
-                <input id="dblHit" type="number" inputmode="numeric" min="0" max="1" step="1" value="0" />
-              </div>
               <button class="primary entryBtn" id="btnSubmit">Go</button>
             </div>
 
             <div class="hint">
-              Checkout: set <b>Hit=1</b>. Missed doubles: set <b>Dub att</b>. Swipe left for history, right for stats.
+              Entering the exact remaining finishes the leg immediately. Swipe left for history, right for stats.
             </div>
           </div>
 
@@ -628,12 +543,9 @@
             </div>
           </div>
 
-          <div class="card statsWrap">
+          <div class="card scrollCard">
             <h2>Statistics</h2>
             <div id="statsTwoUp" class="statsTwoUp"></div>
-            <div class="hint" style="margin-top:10px;">
-              “Checkout %” = legs won where you recorded at least one double attempt in that leg.
-            </div>
           </div>
         </div>
       </div>
@@ -643,8 +555,7 @@
 
 <script>
 (() => {
-  const STORAGE_KEY = "darts_scoreboard_v5";
-
+  const STORAGE_KEY = "darts_scoreboard_v6";
   const $ = (id) => document.getElementById(id);
 
   const setupView = $("setupView");
@@ -655,16 +566,12 @@
   const uiLegsToWin  = $("uiLegsToWin");
   const uiSetNo      = $("uiSetNo");
   const uiLegNo      = $("uiLegNo");
-
-  const hSetNo = $("hSetNo");
-  const hLegNo = $("hLegNo");
-  const sSetNo = $("sSetNo");
-  const sLegNo = $("sLegNo");
+  const hSetNo = $("hSetNo"), hLegNo = $("hLegNo");
+  const sSetNo = $("sSetNo"), sLegNo = $("sLegNo");
 
   const playersPanel = $("playersPanel");
   const historyList  = $("historyList");
   const statsTwoUpEl = $("statsTwoUp");
-
   const toastEl = $("toast");
 
   const startScoreEl = $("startScore");
@@ -676,7 +583,6 @@
   const visitScoreEl = $("visitScore");
   const visitDartsEl = $("visitDarts");
   const dblAttEl     = $("dblAtt");
-  const dblHitEl     = $("dblHit");
 
   const btnStart     = $("btnStart");
   const btnSubmit    = $("btnSubmit");
@@ -688,11 +594,9 @@
   const btnResetAll  = $("btnResetAll");
 
   const swipeWrap = $("swipeWrap");
-  const dot0 = $("dot0");
-  const dot1 = $("dot1");
-  const dot2 = $("dot2");
+  const dot0 = $("dot0"), dot1 = $("dot1"), dot2 = $("dot2");
 
-  // ---------- Checkout table (BULL) ----------
+  // ---------- Checkout suggestions (BULL) ----------
   const TARGETS = [];
   const addTarget = (code, value, isDouble=false) => TARGETS.push({code,value,isDouble});
   for (let i=1;i<=20;i++) addTarget(String(i), i, false);
@@ -702,7 +606,7 @@
   for (let i=1;i<=20;i++) addTarget("T"+i, i*3, false);
 
   const CHECKOUTS = new Map();
-  function genCheckouts(){
+  (function genCheckouts(){
     const doubles = TARGETS.filter(t => t.isDouble);
     const all = TARGETS;
 
@@ -747,13 +651,12 @@
         return x.localeCompare(y);
       });
     }
-  }
-  genCheckouts();
+  })();
 
   // ---------- State ----------
   function emptyMatch(){
     return {
-      version: 5,
+      version: 6,
       config: null,
       status: "setup",
 
@@ -786,17 +689,6 @@
 
   // ---------- Helpers ----------
   const nowISO = () => new Date().toISOString();
-
-  function toast(msg, kind=""){
-    toastEl.textContent = msg;
-    toastEl.className = "toast show";
-    if (kind === "bad") toastEl.style.borderColor = "rgba(239,68,68,.45)";
-    else if (kind === "good") toastEl.style.borderColor = "rgba(16,185,129,.45)";
-    else if (kind === "warn") toastEl.style.borderColor = "rgba(245,158,11,.55)";
-    else toastEl.style.borderColor = "rgba(10,20,40,.16)";
-    setTimeout(() => toastEl.className = "toast", 2200);
-  }
-
   const clampInt = (v, min, max) => {
     const n = Number(v);
     if (!Number.isFinite(n)) return null;
@@ -804,7 +696,6 @@
     if (i < min || i > max) return null;
     return i;
   };
-
   const fmt = (x, digits=2) => (typeof x === "number" && Number.isFinite(x)) ? x.toFixed(digits) : "—";
   const activeIdx = () => match.currentPlayer;
   const otherIdx = () => 1 - match.currentPlayer;
@@ -814,19 +705,26 @@
 
   function escapeHtml(s){
     return String(s)
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+  }
+
+  function toast(msg, kind=""){
+    toastEl.textContent = msg;
+    toastEl.className = "toast show";
+    if (kind === "bad") toastEl.style.borderColor = "rgba(239,68,68,.45)";
+    else if (kind === "good") toastEl.style.borderColor = "rgba(16,185,129,.45)";
+    else if (kind === "warn") toastEl.style.borderColor = "rgba(245,158,11,.55)";
+    else toastEl.style.borderColor = "rgba(10,20,40,.16)";
+    setTimeout(() => toastEl.className = "toast", 2000); // exactly 2 seconds
   }
 
   function focusScoreInput(){
-    // Mobile browsers may only show keyboard on user gesture; we do best-effort focus.
+    // best-effort (mobile may require a user gesture)
     visitScoreEl.focus({preventScroll:true});
   }
 
-  // ---------- Lifecycle ----------
+  // ---------- Match flow ----------
   function startNewMatch(config){
     match = emptyMatch();
     match.config = config;
@@ -849,11 +747,8 @@
 
     save();
     render();
-
-    // Jump to GAME (middle) page
     snapToPanel(1, false);
     resetVisitInputs(true);
-
     toast("Match started!", "good");
   }
 
@@ -903,19 +798,19 @@
   }
 
   function calcDoublesInLeg(){
-    const att = [0,0], hit=[0,0];
+    const att = [0,0];
     for (let i = match.history.length-1; i>=0; i--){
       const ev = match.history[i];
       if (ev.type === "leg_start") break;
-      if (ev.type === "visit"){
-        att[ev.player] += ev.doubleAttempts;
-        hit[ev.player] += ev.doubleHit ? 1 : 0;
-      }
+      if (ev.type === "visit") att[ev.player] += ev.doubleAttempts;
     }
-    return { att, hit };
+    return { att };
   }
 
   function endLeg(winnerIdx, forced=false){
+    const winnerName = match.config.players[winnerIdx].name;
+    const winnerDarts = match.legDarts[winnerIdx];
+
     const first9 = [calcFirst9(0), calcFirst9(1)];
     const doubles = calcDoublesInLeg();
     const checkoutAttempts = [doubles.att[0] > 0 ? 1 : 0, doubles.att[1] > 0 ? 1 : 0];
@@ -938,6 +833,7 @@
 
     match.legsWonInSet[winnerIdx] += 1;
 
+    // Decide next state, then show the “who throws first” message.
     if (match.legsWonInSet[winnerIdx] >= match.config.legsToWin){
       match.setsWon[winnerIdx] += 1;
       match.history.push({ type:"set_end", ts: nowISO(), setNo: match.setNo, winner: winnerIdx });
@@ -945,18 +841,21 @@
       if (match.setsWon[winnerIdx] >= match.config.setsToWin){
         finishMatch(winnerIdx);
         render();
-        toast(`${match.config.players[winnerIdx].name} wins the match!`, "good");
+        toast(`${winnerName} wins the match!`, "good");
         return;
       }
+
       beginNextSet();
       render();
-      toast(`${match.config.players[winnerIdx].name} wins the set!`, "good");
+      const nextStarterName = match.config.players[match.legStarter].name;
+      toast(`${winnerName} wins the leg in ${winnerDarts} darts. ${nextStarterName} throws first. Game on!`, "good");
       return;
     }
 
     beginNextLeg();
     render();
-    toast(`${match.config.players[winnerIdx].name} wins the leg!`, "good");
+    const nextStarterName = match.config.players[match.legStarter].name;
+    toast(`${winnerName} wins the leg in ${winnerDarts} darts. ${nextStarterName} throws first. Game on!`, "good");
   }
 
   // ---------- Scoring ----------
@@ -967,25 +866,22 @@
     const score = clampInt(visitScoreEl.value, 0, 180);
     const dartsUsed = clampInt(visitDartsEl.value, 1, 3);
     const dblAtt = clampInt(dblAttEl.value, 0, 3);
-    const dblHit = clampInt(dblHitEl.value, 0, 1);
 
     if (score === null){ toast("Enter a valid score (0–180).", "bad"); return; }
     if (dartsUsed === null){ toast("Darts must be 1–3.", "bad"); return; }
     if (dblAtt === null){ toast("Double attempts must be 0–3.", "bad"); return; }
-    if (dblHit === null){ toast("Hit must be 0 or 1.", "bad"); return; }
-    if (dblHit === 1 && dblAtt === 0){ toast("If Hit=1, set Dub att at least 1.", "warn"); return; }
 
     const prev = match.remaining[p];
     const next = prev - score;
 
+    // Bust logic stays the same
     let bust = false;
     let checkout = false;
 
     if (next < 0 || next === 1) bust = true;
-    if (next === 0){
-      if (dblHit !== 1) bust = true;
-      else checkout = true;
-    }
+
+    // NEW: if next === 0, we automatically treat as “hit” and end leg.
+    if (next === 0) checkout = true;
 
     match.history.push({
       type:"visit",
@@ -997,7 +893,6 @@
       score,
       dartsUsed,
       doubleAttempts: dblAtt,
-      doubleHit: dblHit,
       bust,
       checkout
     });
@@ -1035,7 +930,6 @@
     visitScoreEl.value = "";
     visitDartsEl.value = "3";
     dblAttEl.value = "0";
-    dblHitEl.value = "0";
     if (tryFocus) focusScoreInput();
   }
 
@@ -1046,8 +940,10 @@
     if (r1 < r0) winner = 1;
     else if (r1 === r0) winner = (match.legScored[1] > match.legScored[0]) ? 1 : 0;
     endLeg(winner, true);
+    resetVisitInputs(true);
   }
 
+  // Undo: unchanged in spirit; rebuilt without dblHit fields
   function undo(){
     const lastVisitIndex = (() => {
       for (let i = match.history.length-1; i>=0; i--){
@@ -1117,16 +1013,13 @@
         }
       } else if (ev.type === "leg_end"){
         const doubles = (() => {
-          const att=[0,0], hit=[0,0];
+          const att=[0,0];
           for (let j=rebuilt.history.length-1; j>=0; j--){
             const e2 = rebuilt.history[j];
             if (e2.type === "leg_start") break;
-            if (e2.type === "visit"){
-              att[e2.player] += e2.doubleAttempts;
-              hit[e2.player] += e2.doubleHit ? 1 : 0;
-            }
+            if (e2.type === "visit") att[e2.player] += e2.doubleAttempts;
           }
-          return {att, hit};
+          return {att};
         })();
 
         const first9 = [
@@ -1174,12 +1067,11 @@
     let totalScored = 0;
     let totalDarts = 0;
     let c60=0,c100=0,c140=0,c170=0,c180=0;
-    let doubleAtt=0, doubleHit=0;
+    let doubleAtt=0;
 
     for (const v of visits){
       totalDarts += v.dartsUsed;
       doubleAtt += v.doubleAttempts;
-      doubleHit += (v.doubleHit ? 1 : 0);
 
       const pts = v.bust ? 0 : v.score;
       totalScored += pts;
@@ -1207,7 +1099,6 @@
 
     const lastLeg = legsAll.length ? legsAll[legsAll.length - 1] : null;
     const previousLegAvg = lastLeg ? (lastLeg.darts[playerIdx] ? (lastLeg.scored[playerIdx]/lastLeg.darts[playerIdx])*3 : null) : null;
-
     const currentLegAvg = match.legDarts[playerIdx] ? (match.legScored[playerIdx]/match.legDarts[playerIdx])*3 : null;
 
     const legDartsTotal = legsAll.reduce((a,L)=>a+(L.darts[playerIdx]||0),0);
@@ -1226,8 +1117,6 @@
     const checkoutSuccess = legsAll.reduce((a,L)=>a+((L.checkoutAttempts?.[playerIdx] ? 1 : 0) && L.winner===playerIdx ? 1 : 0),0);
     const checkoutPct = checkoutAttempts ? (checkoutSuccess/checkoutAttempts)*100 : null;
 
-    const doublePct = doubleAtt ? (doubleHit/doubleAtt)*100 : null;
-
     let first9Sum=0, first9Count=0;
     for (const L of legsAll){
       const f = L.first9?.[playerIdx];
@@ -1242,7 +1131,7 @@
       totalScored, legsWonTotal, matchAvg, completedLegAvg,
       bestLegAvg, worstLegAvg, previousLegAvg, currentLegAvg,
       checkoutPct, checkoutSuccess, checkoutAttempts,
-      doublePct, doubleHit, doubleAtt,
+      doubleAtt,
       breaks, avgDartsPerLeg, bestLegDarts,
       first9Avg, c60,c100,c140,c170,c180
     };
@@ -1263,11 +1152,8 @@
     uiLegsToWin.textContent = match.config.legsToWin;
     uiSetNo.textContent = match.setNo;
     uiLegNo.textContent = match.legNo;
-
-    hSetNo.textContent = match.setNo;
-    hLegNo.textContent = match.legNo;
-    sSetNo.textContent = match.setNo;
-    sLegNo.textContent = match.legNo;
+    hSetNo.textContent = match.setNo; hLegNo.textContent = match.legNo;
+    sSetNo.textContent = match.setNo; sLegNo.textContent = match.legNo;
 
     renderPlayers();
     renderHistory();
@@ -1311,10 +1197,9 @@
   }
 
   function renderHistory(){
-    // show compact, newest first
     const events = match.history.slice().reverse().filter(e =>
       ["visit","leg_end","set_end","match_end","match_start"].includes(e.type)
-    ).slice(0, 120);
+    ).slice(0, 160);
 
     historyList.innerHTML = "";
     if (!events.length){
@@ -1337,7 +1222,7 @@
             <div class="main ${cls}">${escapeHtml(name)}: ${ev.score} <span class="meta">(${label})</span></div>
             <div class="meta">S${ev.setNo} L${ev.legNo}</div>
           </div>
-          <div class="meta">Remaining: ${ev.prevRemaining} → ${after} · Darts: ${ev.dartsUsed} · Doubles: ${ev.doubleHit ? "<span class='ok'>HIT</span>" : "—"} / ${ev.doubleAttempts} att</div>
+          <div class="meta">Remaining: ${ev.prevRemaining} → ${after} · Darts: ${ev.dartsUsed} · Double att: ${ev.doubleAttempts}</div>
         `;
       } else if (ev.type === "leg_end"){
         const name = match.config.players[ev.winner].name;
@@ -1386,7 +1271,6 @@
     const s1 = buildPlayerStats(1);
 
     const pct = (x) => (x==null ? "—" : `${fmt(x,1)}%`);
-    const dbl = (hit, att) => (att ? `${fmt((hit/att)*100,1)}%` : "—");
 
     const renderOne = (idx, s) => {
       const name = match.config.players[idx].name;
@@ -1405,7 +1289,7 @@
           ${statRow("Previous leg avg", `<span class="mono">${fmt(s.previousLegAvg)}</span>`)}
           ${statRow("Current leg avg", `<span class="mono">${fmt(s.currentLegAvg)}</span>`)}
           ${statRow("Checkout %", `<span class="mono">${pct(s.checkoutPct)}</span> <span class="mono" style="opacity:.7">(${s.checkoutSuccess}/${s.checkoutAttempts})</span>`)}
-          ${statRow("Double %", `<span class="mono">${dbl(s.doubleHit, s.doubleAtt)}</span> <span class="mono" style="opacity:.7">(${s.doubleHit}/${s.doubleAtt})</span>`)}
+          ${statRow("Double attempts", `<span class="mono">${s.doubleAtt}</span>`)}
           ${statRow("Breaks", `<span class="mono">${s.breaks}</span>`)}
           ${statRow("Avg darts / leg", `<span class="mono">${fmt(s.avgDartsPerLeg,2)}</span>`)}
           ${statRow("Best leg darts (won)", `<span class="mono">${s.bestLegDarts ?? "—"}</span>`)}
@@ -1419,7 +1303,7 @@
     statsTwoUpEl.innerHTML = renderOne(0, s0) + renderOne(1, s1);
   }
 
-  // ---------- Swipe / dots (3 pages) ----------
+  // ---------- Swipe dots ----------
   function updateDots(){
     const x = swipeWrap.scrollLeft;
     const w = swipeWrap.clientWidth || 1;
@@ -1428,30 +1312,19 @@
     dot1.classList.toggle("active", idx === 1);
     dot2.classList.toggle("active", idx === 2);
   }
-
   function snapToPanel(index, smooth=true){
     const w = swipeWrap.clientWidth || 1;
     swipeWrap.scrollTo({ left: index * w, behavior: smooth ? "smooth" : "instant" });
   }
-
   swipeWrap.addEventListener("scroll", updateDots, {passive:true});
   window.addEventListener("resize", () => {
-    // keep current panel aligned on resize
     const w = swipeWrap.clientWidth || 1;
     const idx = Math.round(swipeWrap.scrollLeft / w);
     snapToPanel(idx, false);
     updateDots();
   });
 
-  // If user swipes away from game, stop forcing focus.
-  function currentPanelIndex(){
-    const w = swipeWrap.clientWidth || 1;
-    return Math.round(swipeWrap.scrollLeft / w);
-  }
-
   // ---------- UI actions ----------
-  playersPanel.addEventListener("click", () => focusScoreInput());
-
   btnStart.addEventListener("click", () => {
     const startScore = clampInt(startScoreEl.value, 101, 5000) ?? 501;
     const setsToWin = clampInt(setsToWinEl.value, 1, 99);
@@ -1465,21 +1338,13 @@
     startNewMatch({ startScore, setsToWin, legsToWin, players:[{name:p1},{name:p2}] });
   });
 
-  btnSubmit.addEventListener("click", () => {
-    submitVisit();
-    // Keep the keyboard up by re-focusing if we’re still on game panel.
-    if (currentPanelIndex() === 1) focusScoreInput();
-  });
-
+  btnSubmit.addEventListener("click", () => { submitVisit(); focusScoreInput(); });
   visitScoreEl.addEventListener("keydown", (e) => {
-    if (e.key === "Enter"){
-      submitVisit();
-      if (currentPanelIndex() === 1) focusScoreInput();
-    }
+    if (e.key === "Enter"){ submitVisit(); focusScoreInput(); }
   });
 
-  btnUndo.addEventListener("click", () => { undo(); if (currentPanelIndex() === 1) focusScoreInput(); });
-  btnEndLeg.addEventListener("click", () => { forceEndLeg(); if (currentPanelIndex() === 1) focusScoreInput(); });
+  btnUndo.addEventListener("click", () => { undo(); focusScoreInput(); });
+  btnEndLeg.addEventListener("click", () => forceEndLeg());
 
   btnNewMatch.addEventListener("click", () => {
     match = emptyMatch();
@@ -1526,18 +1391,11 @@
     match = match ?? emptyMatch();
     match.status = "setup";
   }
-
-  function renderAndCenterGameIfPlaying(){
-    render();
-    if (match.status !== "setup" && match.config){
-      // Default view is the middle (Game).
-      snapToPanel(1, false);
-      // Best effort: focus so the keyboard pops when user has interacted (or after start).
-      setTimeout(() => focusScoreInput(), 50);
-    }
+  render();
+  if (match.status !== "setup" && match.config){
+    snapToPanel(1, false);
+    setTimeout(() => focusScoreInput(), 60);
   }
-
-  renderAndCenterGameIfPlaying();
 })();
 </script>
 </body>
